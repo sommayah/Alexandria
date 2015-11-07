@@ -96,6 +96,9 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 boolean internetConnection = true;
                 if (Utilities.isOnline(getActivity()) == false) {
                     internetConnection= false;
+                    Toast.makeText(getActivity(), "no internet connection",
+                            Toast.LENGTH_SHORT).show();
+
                 }
                 //Once we have an ISBN, start a book intent
                 Intent bookIntent = new Intent(getActivity(), BookService.class);

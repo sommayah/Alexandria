@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,11 +97,7 @@ public class BookService extends IntentService {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String bookJsonString = null;
-        if(isInternetConnected == false){
-            //ss:show message that there is not internet connection
-            Toast.makeText(getApplicationContext(), "no internet connection",
-                    Toast.LENGTH_SHORT).show();
-        }else {
+        if(isInternetConnected == true){
 
             try {
                 final String FORECAST_BASE_URL = "https://www.googleapis.com/books/v1/volumes?";
@@ -208,6 +203,8 @@ public class BookService extends IntentService {
             } catch (JSONException e) {
                 Log.e(LOG_TAG, "Error ", e);
             }
+        }else{
+            Log.d(LOG_TAG,"no internet connection");
         }
     }
 
