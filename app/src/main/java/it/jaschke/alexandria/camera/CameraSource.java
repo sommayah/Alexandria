@@ -48,6 +48,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.jaschke.alexandria.R;
+
 // Note: This requires Google Play Services 8.1 or higher, due to using indirect byte buffers for
 // storing images.
 
@@ -177,7 +179,7 @@ public class CameraSource {
          */
         public Builder(Context context, Detector<?> detector) {
             if (context == null) {
-                throw new IllegalArgumentException("No context supplied.");
+                throw new IllegalArgumentException("No context supplied.");  //can't put it in string when context is null
             }
             if (detector == null) {
                 throw new IllegalArgumentException("No detector supplied.");
@@ -193,7 +195,7 @@ public class CameraSource {
          */
         public Builder setRequestedFps(float fps) {
             if (fps <= 0) {
-                throw new IllegalArgumentException("Invalid fps: " + fps);
+                throw new IllegalArgumentException(mCameraSource.mContext.getString(R.string.invalid_fps) + fps);
             }
             mCameraSource.mRequestedFps = fps;
             return this;
@@ -221,7 +223,7 @@ public class CameraSource {
             // devices can support.  We bound this to avoid int overflow in the code later.
             final int MAX = 1000000;
             if ((width <= 0) || (width > MAX) || (height <= 0) || (height > MAX)) {
-                throw new IllegalArgumentException("Invalid preview size: " + width + "x" + height);
+                throw new IllegalArgumentException(mCameraSource.mContext.getString(R.string.invalid_preview_size) + width + mCameraSource.mContext.getString(R.string.x) + height);
             }
             mCameraSource.mRequestedPreviewWidth = width;
             mCameraSource.mRequestedPreviewHeight = height;
@@ -234,7 +236,7 @@ public class CameraSource {
          */
         public Builder setFacing(int facing) {
             if ((facing != CAMERA_FACING_BACK) && (facing != CAMERA_FACING_FRONT)) {
-                throw new IllegalArgumentException("Invalid camera: " + facing);
+                throw new IllegalArgumentException(mCameraSource.mContext.getString(R.string.invalid_camera) + facing);
             }
             mCameraSource.mFacing = facing;
             return this;
@@ -403,7 +405,7 @@ public class CameraSource {
                     // quickly after stop).
                     mProcessingThread.join();
                 } catch (InterruptedException e) {
-                    Log.d(TAG, "Frame processing thread interrupted on release.");
+                    Log.d(TAG, mContext.getString(R.string.processing_interrupted));
                 }
                 mProcessingThread = null;
             }
@@ -427,7 +429,7 @@ public class CameraSource {
                         mCamera.setPreviewDisplay(null);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "Failed to clear camera preview: " + e);
+                    Log.e(TAG, mContext.getString(R.string.failed_to_clear_preview) + e);
                 }
                 mCamera.release();
                 mCamera = null;
@@ -459,7 +461,7 @@ public class CameraSource {
             int maxZoom;
             Camera.Parameters parameters = mCamera.getParameters();
             if (!parameters.isZoomSupported()) {
-                Log.w(TAG, "Zoom is not supported on this device");
+                Log.w(TAG, mContext.getString(R.string.zoom_not_supported));
                 return currentZoom;
             }
             maxZoom = parameters.getMaxZoom();
@@ -742,20 +744,20 @@ public class CameraSource {
     private Camera createCamera() {
         int requestedCameraId = getIdForRequestedCamera(mFacing);
         if (requestedCameraId == -1) {
-            throw new RuntimeException("Could not find requested camera.");
+            throw new RuntimeException(mContext.getString(R.string.no_requested_camera));
         }
         Camera camera = Camera.open(requestedCameraId);
 
-        SizePair sizePair = selectSizePair(camera, mRequestedPreviewWidth, mRequestedPreviewHeight);
+        SizePair sizePair = selectSizePair(camera, mRequestedPreviewWidth, mRequestedPreviewHeight, mContext);
         if (sizePair == null) {
-            throw new RuntimeException("Could not find suitable preview size.");
+            throw new RuntimeException(mContext.getString(R.string.no_suitable_preview_size));
         }
         Size pictureSize = sizePair.pictureSize();
         mPreviewSize = sizePair.previewSize();
 
         int[] previewFpsRange = selectPreviewFpsRange(camera, mRequestedFps);
         if (previewFpsRange == null) {
-            throw new RuntimeException("Could not find suitable preview frames per second range.");
+            throw new RuntimeException(mContext.getString(R.string.no_suitable_frames_per_second));
         }
 
         Camera.Parameters parameters = camera.getParameters();
@@ -774,7 +776,7 @@ public class CameraSource {
                     mFocusMode)) {
                 parameters.setFocusMode(mFocusMode);
             } else {
-                Log.i(TAG, "Camera focus mode: " + mFocusMode + " is not supported on this device.");
+                Log.i(TAG, mContext.getString(R.string.camera_focus_mode) + mFocusMode + mContext.getString(R.string.not_supported));
             }
         }
 
@@ -786,7 +788,7 @@ public class CameraSource {
                     mFlashMode)) {
                 parameters.setFlashMode(mFlashMode);
             } else {
-                Log.i(TAG, "Camera flash mode: " + mFlashMode + " is not supported on this device.");
+                Log.i(TAG, mContext.getString(R.string.flash_mode) + mFlashMode + mContext.getString(R.string.not_supported));
             }
         }
 
@@ -839,8 +841,8 @@ public class CameraSource {
      * @param desiredHeight the desired height of the camera preview frames
      * @return the selected preview and picture size pair
      */
-    private static SizePair selectSizePair(Camera camera, int desiredWidth, int desiredHeight) {
-        List<SizePair> validPreviewSizes = generateValidPreviewSizeList(camera);
+    private static SizePair selectSizePair(Camera camera, int desiredWidth, int desiredHeight, Context context) {
+        List<SizePair> validPreviewSizes = generateValidPreviewSizeList(camera, context);
 
         // The method for selecting the best size is to minimize the sum of the differences between
         // the desired values and the actual values for width and height.  This is certainly not the
@@ -896,7 +898,7 @@ public class CameraSource {
      * set to a size that is the same aspect ratio as the preview size we choose.  Otherwise, the
      * preview images may be distorted on some devices.
      */
-    private static List<SizePair> generateValidPreviewSizeList(Camera camera) {
+    private static List<SizePair> generateValidPreviewSizeList(Camera camera, Context context) {
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> supportedPreviewSizes =
                 parameters.getSupportedPreviewSizes();
@@ -922,7 +924,7 @@ public class CameraSource {
         // of the preview sizes and hope that the camera can handle it.  Probably unlikely, but we
         // still account for it.
         if (validPreviewSizes.size() == 0) {
-            Log.w(TAG, "No preview sizes have a corresponding same-aspect-ratio picture size");
+            Log.w(TAG, context.getString(R.string.no_same_Aspect_ratio));
             for (Camera.Size previewSize : supportedPreviewSizes) {
                 // The null picture size will let us know that we shouldn't set a picture size.
                 validPreviewSizes.add(new SizePair(previewSize, null));
@@ -991,7 +993,7 @@ public class CameraSource {
                 degrees = 270;
                 break;
             default:
-                Log.e(TAG, "Bad rotation value: " + rotation);
+                Log.e(TAG, mContext.getString(R.string.bad_rotation) + rotation);
         }
 
         CameraInfo cameraInfo = new CameraInfo();
@@ -1036,7 +1038,7 @@ public class CameraSource {
         if (!buffer.hasArray() || (buffer.array() != byteArray)) {
             // I don't think that this will ever happen.  But if it does, then we wouldn't be
             // passing the preview content to the underlying detector later.
-            throw new IllegalStateException("Failed to create valid buffer for camera source.");
+            throw new IllegalStateException(mContext.getString(R.string.failed_to_create_vaild_buffer));
         }
 
         mBytesToByteBuffer.put(byteArray, buffer);
@@ -1155,7 +1157,7 @@ public class CameraSource {
                             // don't have it yet.
                             mLock.wait();
                         } catch (InterruptedException e) {
-                            Log.d(TAG, "Frame processing loop terminated.", e);
+                            Log.d(TAG, mContext.getString(R.string.frame_processing_loop_terminated), e);
                             return;
                         }
                     }
@@ -1190,7 +1192,7 @@ public class CameraSource {
                 try {
                     mDetector.receiveFrame(outputFrame);
                 } catch (Throwable t) {
-                    Log.e(TAG, "Exception thrown from receiver.", t);
+                    Log.e(TAG, mContext.getString(R.string.exception_from_receiver), t);
                 } finally {
                     mCamera.addCallbackBuffer(data.array());
                 }

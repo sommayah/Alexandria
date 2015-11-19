@@ -109,7 +109,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
-        Snackbar.make(mGraphicOverlay, "Tap to capture. Pinch/Stretch to zoom",
+        Snackbar.make(mGraphicOverlay, getString(R.string.tap_to_capture),
                 Snackbar.LENGTH_LONG)
                 .show();
     }
@@ -120,7 +120,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
      * sending the request.
      */
     private void requestCameraPermission() {
-        Log.w(TAG, "Camera permission is not granted. Requesting permission");
+        Log.w(TAG, getString(R.string.camera_permission_not_granted));
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 
@@ -186,7 +186,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
             // isOperational() can be used to check if the required native libraries are currently
             // available.  The detectors will automatically become operational once the library
             // downloads complete on device.
-            Log.w(TAG, "Detector dependencies are not yet available.");
+            Log.w(TAG, getString(R.string.detector_dependencies));
 
             // Check for low storage.  If there is low storage, the native library will not be
             // downloaded, so detection will not become operational.
@@ -271,13 +271,13 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode != RC_HANDLE_CAMERA_PERM) {
-            Log.d(TAG, "Got unexpected permission result: " + requestCode);
+            Log.d(TAG, getString(R.string.unexpected_permission) + requestCode);
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             return;
         }
 
         if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "Camera permission granted - initialize the camera source");
+            Log.d(TAG, getString(R.string.camera_permission_granted));
             // we have permission, so create the camerasource
             boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
             boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
@@ -285,8 +285,8 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
             return;
         }
 
-        Log.e(TAG, "Permission not granted: results len = " + grantResults.length +
-                " Result code = " + (grantResults.length > 0 ? grantResults[0] : "(empty)"));
+        Log.e(TAG, getString(R.string.permission_not_granted) + grantResults.length +
+                getString(R.string.result_code) + (grantResults.length > 0 ? grantResults[0] : getString(R.string.empty)));
 
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -295,7 +295,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
         };
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Multitracker sample")
+        builder.setTitle(getString(R.string.multitracker_sample))
                 .setMessage(R.string.no_camera_permission)
                 .setPositiveButton(R.string.ok, listener)
                 .show();
@@ -320,7 +320,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
             try {
                 mPreview.start(mCameraSource, mGraphicOverlay);
             } catch (IOException e) {
-                Log.e(TAG, "Unable to start camera source.", e);
+                Log.e(TAG, getString(R.string.unable_to_start_camera), e);
                 mCameraSource.release();
                 mCameraSource = null;
             }
@@ -349,11 +349,11 @@ public final class BarcodeCaptureActivity extends AppCompatActivity {
                 finish();
             }
             else {
-                Log.d(TAG, "barcode data is null");
+                Log.d(TAG, getString(R.string.barcode_data_null));
             }
         }
         else {
-            Log.d(TAG, "no barcode detected");
+            Log.d(TAG, getString(R.string.no_barcode_detected));
         }
         return barcode != null;
     }

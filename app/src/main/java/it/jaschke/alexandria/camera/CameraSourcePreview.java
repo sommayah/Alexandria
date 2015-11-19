@@ -29,6 +29,8 @@ import com.google.android.gms.common.images.Size;
 
 import java.io.IOException;
 
+import it.jaschke.alexandria.R;
+
 public class CameraSourcePreview extends ViewGroup {
     private static final String TAG = "CameraSourcePreview";
 
@@ -112,9 +114,9 @@ public class CameraSourcePreview extends ViewGroup {
             try {
                 startIfReady();
             } catch (SecurityException se) {
-                Log.e(TAG,"Do not have permission to start the camera", se);
+                Log.e(TAG,mContext.getString(R.string.no_permission_to_camera), se);
             } catch (IOException e) {
-                Log.e(TAG, "Could not start camera source.", e);
+                Log.e(TAG, mContext.getString(R.string.could_not_start_camera), e);
             }
         }
 
@@ -168,9 +170,9 @@ public class CameraSourcePreview extends ViewGroup {
         try {
             startIfReady();
         } catch (SecurityException se) {
-            Log.e(TAG,"Do not have permission to start the camera", se);
+            Log.e(TAG,mContext.getString(R.string.no_permission_to_camera), se);
         } catch (IOException e) {
-            Log.e(TAG, "Could not start camera source.", e);
+            Log.e(TAG, mContext.getString(R.string.could_not_start_camera), e);
         }
     }
 
@@ -183,7 +185,7 @@ public class CameraSourcePreview extends ViewGroup {
             return true;
         }
 
-        Log.d(TAG, "isPortraitMode returning false by default");
+        Log.d(TAG, mContext.getString(R.string.isPortraitMode_false));
         return false;
     }
 }

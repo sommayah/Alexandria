@@ -172,7 +172,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             return null;
         }
         String eanStr= ean.getText().toString();
-        if(eanStr.length()==10 && !eanStr.startsWith("978")){
+        if(eanStr.length()==10 && !eanStr.startsWith(getString(R.string.begin_barcode))){
             eanStr=getString(R.string.begin_barcode)+eanStr;
         }
         return new CursorLoader(

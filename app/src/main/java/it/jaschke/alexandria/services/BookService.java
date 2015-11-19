@@ -100,19 +100,19 @@ public class BookService extends IntentService {
         if(isInternetConnected == true){
 
             try {
-                final String FORECAST_BASE_URL = "https://www.googleapis.com/books/v1/volumes?";
-                final String QUERY_PARAM = "q";
+                final String BOOK_BASE_URL = getApplicationContext().getString(R.string.book_base_url);
+                final String QUERY_PARAM = getApplicationContext().getString(R.string.q);
 
-                final String ISBN_PARAM = "isbn:" + ean;
+                final String ISBN_PARAM = getApplicationContext().getString(R.string.isbn) + ean;
 
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                Uri builtUri = Uri.parse(BOOK_BASE_URL).buildUpon()
                         .appendQueryParameter(QUERY_PARAM, ISBN_PARAM)
                         .build();
 
                 URL url = new URL(builtUri.toString());
 
                 urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
+                urlConnection.setRequestMethod(getApplicationContext().getString(R.string.get));
                 urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
@@ -133,7 +133,7 @@ public class BookService extends IntentService {
                 }
                 bookJsonString = buffer.toString();
             } catch (Exception e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, getApplicationContext().getString(R.string.error), e);
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -142,7 +142,7 @@ public class BookService extends IntentService {
                     try {
                         reader.close();
                     } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
+                        Log.e(LOG_TAG, getApplicationContext().getString(R.string.error_closing_stream), e);
                     }
                 }
 
@@ -201,10 +201,10 @@ public class BookService extends IntentService {
                 }
 
             } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error ", e);
+                Log.e(LOG_TAG, getApplicationContext().getString(R.string.error), e);
             }
         }else{
-            Log.d(LOG_TAG,"no internet connection");
+            Log.d(LOG_TAG,getApplicationContext().getString(R.string.no_internet));
         }
     }
 

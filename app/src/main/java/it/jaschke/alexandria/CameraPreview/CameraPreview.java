@@ -14,12 +14,15 @@ import android.view.SurfaceView;
 
 import java.io.IOException;
 
+import it.jaschke.alexandria.R;
+
 /** A basic Camera preview class */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private Camera.PreviewCallback previewCallback;
     private Camera.AutoFocusCallback autoFocusCallback;
+    private Context mContext;
 
     public CameraPreview(Context context, Camera camera,
                          Camera.PreviewCallback previewCb,
@@ -28,6 +31,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCamera = camera;
         previewCallback = previewCb;
         autoFocusCallback = autoFocusCb;
+        mContext = context;
 
         /*
          * Set camera to continuous focus if supported, otherwise use
@@ -58,7 +62,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             mCamera.setPreviewDisplay(holder);
         } catch (IOException e) {
-            Log.d("DBG", "Error setting camera preview: " + e.getMessage());
+            Log.d(mContext.getString(R.string.dbg), mContext.getString(R.string.error_camera) + e.getMessage());
         }
     }
 
@@ -92,7 +96,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCamera.startPreview();
             mCamera.autoFocus(autoFocusCallback);
         } catch (Exception e){
-            Log.d("DBG", "Error starting camera preview: " + e.getMessage());
+            Log.d(mContext.getString(R.string.dbg), mContext.getString(R.string.error_camera)  + e.getMessage());
         }
     }
 }
