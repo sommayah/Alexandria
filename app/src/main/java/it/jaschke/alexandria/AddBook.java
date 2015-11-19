@@ -85,8 +85,8 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
             public void afterTextChanged(Editable s) {
                 String ean =s.toString();
                 //catch isbn10 numbers
-                if(ean.length()==10 && !ean.startsWith("978")){
-                    ean="978"+ean;
+                if(ean.length()==10 && !ean.startsWith(getString(R.string.begin_barcode))){
+                    ean=getString(R.string.begin_barcode)+ean;
                 }
                 if(ean.length()<13){
                     clearFields();
@@ -96,7 +96,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 boolean internetConnection = true;
                 if (Utilities.isOnline(getActivity()) == false) {
                     internetConnection= false;
-                    Toast.makeText(getActivity(), "no internet connection",
+                    Toast.makeText(getActivity(), getString(R.string.no_internet),
                             Toast.LENGTH_SHORT).show();
 
                 }
@@ -173,7 +173,7 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
         }
         String eanStr= ean.getText().toString();
         if(eanStr.length()==10 && !eanStr.startsWith("978")){
-            eanStr="978"+eanStr;
+            eanStr=getString(R.string.begin_barcode)+eanStr;
         }
         return new CursorLoader(
                 getActivity(),
@@ -264,11 +264,11 @@ public class AddBook extends Fragment implements LoaderManager.LoaderCallbacks<C
                 if (data != null) {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     //ss: put toast of success here
-                    Log.d(TAGBARCODE, "Barcode read: " + barcode.displayValue);
+                    Log.d(TAGBARCODE, getString(R.string.barcode_read) + barcode.displayValue);
                     ean.setText(barcode.displayValue);
                 } else {
                     //ss:put toast of failure here
-                    Log.d(TAGBARCODE, "No barcode captured, intent data is null");
+                    Log.d(TAGBARCODE, getString(R.string.no_barcode_captured));
                 }
             } else {
                 //ss:put toast of error here

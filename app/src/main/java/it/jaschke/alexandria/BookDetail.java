@@ -97,7 +97,7 @@ public class BookDetail extends Fragment implements LoaderManager.LoaderCallback
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
-        shareIntent.setType("text/plain");
+        shareIntent.setType(getString(R.string.text_plain));
         shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text)+bookTitle);
         shareActionProvider.setShareIntent(shareIntent);
 
