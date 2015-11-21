@@ -81,9 +81,9 @@
     <string name="exception_from_receiver">Exception thrown from receiver.</string>
     <string name="error_closing_stream">Error closing stream</string>
     <string name="book_base_url">https://www.googleapis.com/books/v1/volumes?</string>
-    <string name="q">q</string>
-    <string name="isbn">isbn:</string>
-    <string name="get">GET</string>
+    <string name="q" translatable="false">q</string>
+    <string name="isbn" translatable="false">isbn:</string>
+    <string name="get" translatable="false">GET</string>
     <string name="dbg">DBG</string>
     <string name="error_camera">Error setting camera preview: </string>
     <string name="no_permission_to_camera">Do not have permission to start the camera</string>
