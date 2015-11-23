@@ -89,6 +89,8 @@
     <string name="no_permission_to_camera">Do not have permission to start the camera</string>
     <string name="could_not_start_camera">Could not start camera source.</string>
     <string name="isPortraitMode_false">isPortraitMode returning false by default</string>
+    <string name="empty_list_view">There are no books to show</string>
+
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="about_text">This application gets book information from a Google API. All titles, cover images, and author information come from there.

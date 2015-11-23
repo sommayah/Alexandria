@@ -63,6 +63,8 @@ public class ListOfBooks extends Fragment implements LoaderManager.LoaderCallbac
         );
 
         bookList = (ListView) rootView.findViewById(R.id.listOfBooks);
+        View emptyView = rootView.findViewById(R.id.emptytextView);
+        bookList.setEmptyView(emptyView);
         bookList.setAdapter(bookListAdapter);
 
         bookList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
